@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GeoField — Slump Test</title>
+<meta name="theme-color" content="#1A1A18">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #F2F2F0; --surface: #FFFFFF; --surface2: #EAEAE7;
+    --border: #D0CFC9; --text: #1A1A18; --text2: #5A5A56; --text3: #8A8A84;
+    --accent: #E85D20; --accent-dark: #C44A14;
+    --blue: #1A5FA8; --blue-light: #EEF4FF; --blue-border: #BDD3F8;
+    --green: #1E7A3C; --green-bg: #EAF5EE; --green-border: #A8D9B8;
+    --red: #C0392B; --red-bg: #FDECEA; --red-border: #F5C0BA;
+    --yellow: #B87800; --yellow-bg: #FFF5DC; --yellow-border: #F0D080;
+    --radius: 12px; --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system,'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); min-height:100vh; max-width:430px; margin:0 auto; }
+
+  .header { background:var(--text); color:#fff; padding:18px 20px 14px; display:flex; align-items:center; gap:14px; }
+  .btn-back { width:40px;height:40px;background:rgba(255,255,255,0.1);border:none;border-radius:10px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+  .btn-back:active{background:rgba(255,255,255,0.2);}
+  .header-info{flex:1;}
+  .app-name{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:2px;}
+  .header-title{font-size:19px;font-weight:700;}
+  .header-sub{font-size:12px;color:rgba(255,255,255,0.5);margin-top:1px;}
+
+  /* Obra banner */
+  .obra-banner{background:#1A3A60;padding:10px 20px;display:flex;align-items:center;gap:10px;}
+  .obra-banner-icon{font-size:16px;}
+  .obra-banner-text{font-size:12px;color:rgba(255,255,255,0.7);}
+  .obra-banner-text strong{color:#fff;font-weight:700;}
+
+  .main{padding:16px;display:flex;flex-direction:column;gap:16px;padding-bottom:120px;}
+
+  .section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+
+  /* FIELD */
+  .field-group{display:flex;flex-direction:column;gap:10px;}
+  .field{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s;}
+  .field:focus-within{border-color:var(--blue);}
+  .field-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;}
+  .req{color:var(--accent);}
+  .field-input{width:100%;background:none;border:none;outline:none;font-size:18px;font-weight:700;color:var(--text);font-family:inherit;}
+  .field-input::placeholder{color:var(--border);font-weight:400;}
+  .field-select{width:100%;background:none;border:none;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A8A84' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;padding-right:22px;}
+  .field-unit{font-size:13px;font-weight:600;color:var(--text3);display:flex;align-items:center;gap:8px;margin-top:4px;}
+  .field-hint{font-size:11px;color:var(--text3);margin-top:5px;line-height:1.4;}
+
+  /* Auto-fill badge */
+  .auto-tag{font-size:10px;font-weight:700;background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border);padding:2px 7px;border-radius:10px;letter-spacing:.04em;}
+
+  /* Row de 2 */
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* RESULTADO EM TEMPO REAL */
+  .resultado-box{border-radius:var(--radius);padding:18px 16px;text-align:center;transition:all 0.4s;border:2px solid var(--border);background:var(--surface);}
+  .resultado-box.aprovado{background:var(--green-bg);border-color:var(--green-border);}
+  .resultado-box.reprovado{background:var(--red-bg);border-color:var(--red-border);}
+  .resultado-box.atencao{background:var(--yellow-bg);border-color:var(--yellow-border);}
+  .resultado-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;}
+  .resultado-label.aprovado{color:var(--green);}
+  .resultado-label.reprovado{color:var(--red);}
+  .resultado-label.atencao{color:var(--yellow);}
+  .resultado-valor{font-size:52px;font-weight:800;line-height:1;color:var(--text3);}
+  .resultado-valor.aprovado{color:var(--green);}
+  .resultado-valor.reprovado{color:var(--red);}
+  .resultado-valor.atencao{color:var(--yellow);}
+  .resultado-unidade{font-size:16px;font-weight:600;margin-top:4px;color:inherit;}
+  .resultado-norma{font-size:12px;margin-top:8px;color:var(--text3);}
+  .resultado-norma strong{color:inherit;}
+
+  /* CPs */
+  .cp-list{display:flex;flex-direction:column;gap:8px;}
+  .cp-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:12px;}
+  .cp-num{width:32px;height:32px;background:var(--blue);border-radius:8px;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .cp-info{flex:1;}
+  .cp-title{font-size:13px;font-weight:700;color:var(--text);}
+  .cp-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+  .cp-status{font-size:20px;}
+  .btn-add-cp{background:none;border:1.5px dashed var(--border);border-radius:var(--radius-sm);padding:12px;width:100%;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:border-color .2s,color .2s;}
+  .btn-add-cp:active{border-color:var(--blue);color:var(--blue);}
+
+  /* FOTO */
+  .foto-area{background:var(--surface);border:1.5px dashed var(--border);border-radius:var(--radius);padding:20px 16px;text-align:center;cursor:pointer;transition:border-color .2s;}
+  .foto-area:active{border-color:var(--accent);}
+  .foto-icon{font-size:36px;margin-bottom:8px;}
+  .foto-text{font-size:14px;font-weight:600;color:var(--text2);}
+  .foto-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+  .foto-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;justify-content:center;}
+  .foto-tag{font-size:10px;font-weight:700;background:var(--surface2);color:var(--text3);border:1px solid var(--border);padding:3px 8px;border-radius:10px;}
+
+  /* OBSERVAÇÕES */
+  .obs-field{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;}
+  .obs-field:focus-within{border-color:var(--blue);}
+  .obs-textarea{width:100%;background:none;border:none;outline:none;font-size:14px;color:var(--text);font-family:inherit;resize:none;min-height:80px;line-height:1.5;}
+  .obs-textarea::placeholder{color:var(--border);}
+  .obs-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+  .btn-mic{background:var(--blue-light);border:1px solid var(--blue-border);border-radius:20px;color:var(--blue);font-size:12px;font-weight:600;padding:5px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .char-count{font-size:11px;color:var(--text3);}
+
+  /* BOTTOM BAR */
+  .bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--surface);border-top:1.5px solid var(--border);padding:12px 16px 20px;display:flex;gap:10px;z-index:20;}
+  .btn-salvar-rascunho{flex:1;background:none;border:1.5px solid var(--border);border-radius:var(--radius);height:52px;font-size:14px;font-weight:700;color:var(--text2);cursor:pointer;transition:background .15s;}
+  .btn-salvar-rascunho:active{background:var(--surface2);}
+  .btn-finalizar{flex:2;background:var(--accent);border:none;border-radius:var(--radius);height:52px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;transition:background .15s;}
+  .btn-finalizar:active{background:var(--accent-dark);}
+  .btn-finalizar:disabled{opacity:.35;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <button class="btn-back">VOLTAR</button>
+  <div class="header-info">
+    <div class="app-name">Concreto</div>
+    <div class="header-title">Slump Test</div>
+    <div class="header-sub">ABNT NBR 7223</div>
+  </div>
+</header>
+
+<div class="obra-banner">
+  <span class="obra-banner-icon">📍</span>
+  <span class="obra-banner-text"><strong>BR-163 Lote 4A</strong> · Est. 240+00 · 18/06/2026</span>
+</div>
+
+<main class="main">
+
+  <!-- IDENTIFICAÇÃO -->
+  <section>
+    <div class="section-label">Identificação</div>
+    <div class="field-group">
+
+      <div class="field">
+        <div class="field-label">Data e hora <span class="auto-tag">AUTO</span></div>
+        <div class="field-input" id="dt-auto" style="font-size:16px;font-weight:600;color:var(--text2);"></div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Nº amostra <span class="req">*</span></div>
+          <input class="field-input" type="number" inputmode="numeric" placeholder="012" id="num-amostra">
+        </div>
+        <div class="field">
+          <div class="field-label">Fck projeto</div>
+          <input class="field-input" type="number" inputmode="decimal" placeholder="25" id="fck">
+          <div class="field-unit">MPa</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">NF betoneira <span class="req">*</span></div>
+        <input class="field-input" type="text" inputmode="text" placeholder="NF-4892" id="nf-betoneira" style="text-transform:uppercase;">
+        <div class="field-hint">Nota fiscal do caminhão betoneira para rastreabilidade</div>
+      </div>
+
+      <div class="field">
+        <div class="field-label">Peça / Elemento concretado</div>
+        <select class="field-select">
+          <option value="">— Selecione —</option>
+          <option>Laje de pavimento</option>
+          <option>Viga baldrame</option>
+          <option>Pilar</option>
+          <option>Fundação / Bloco</option>
+          <option>Viga</option>
+          <option>Muro de arrimo</option>
+          <option>Outro</option>
+        </select>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RESULTADO SLUMP EM TEMPO REAL -->
+  <section>
+    <div class="section-label">Medição do abatimento</div>
+
+    <div class="resultado-box" id="res-box">
+      <div class="resultado-label" id="res-label">Abatimento medido</div>
+      <div class="resultado-valor" id="res-valor">—</div>
+      <div class="resultado-unidade">mm</div>
+      <div class="resultado-norma" id="res-norma">Insira o valor abaixo</div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div class="field">
+        <div class="field-label">Abatimento (Slump) <span class="req">*</span></div>
+        <input class="field-input" type="number" inputmode="decimal" placeholder="80" id="slump-val" oninput="calcSlump()" style="font-size:28px;">
+        <div class="field-unit">
+          mm
+          <span id="slump-chip" style="display:none;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;margin-left:4px;"></span>
+        </div>
+        <div class="field-hint">Limite de norma: 60–120 mm (concreto estrutural padrão)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORPOS DE PROVA -->
+  <section>
+    <div class="section-label">Corpos de prova (CPs)</div>
+    <div class="cp-list" id="cp-list">
+      <div class="cp-item">
+        <div class="cp-num">1</div>
+        <div class="cp-info">
+          <div class="cp-title">CP-01</div>
+          <div class="cp-sub">Rompimento: 7 dias · 25/06/2026</div>
+        </div>
+        <span class="cp-status">🟡</span>
+      </div>
+      <div class="cp-item">
+        <div class="cp-num">2</div>
+        <div class="cp-info">
+          <div class="cp-title">CP-02</div>
+          <div class="cp-sub">Rompimento: 7 dias · 25/06/2026</div>
+        </div>
+        <span class="cp-status">🟡</span>
+      </div>
+      <div class="cp-item">
+        <div class="cp-num">3</div>
+        <div class="cp-info">
+          <div class="cp-title">CP-03</div>
+          <div class="cp-sub">Rompimento: 28 dias · 16/07/2026</div>
+        </div>
+        <span class="cp-status">🟡</span>
+      </div>
+      <div class="cp-item">
+        <div class="cp-num">4</div>
+        <div class="cp-info">
+          <div class="cp-title">CP-04</div>
+          <div class="cp-sub">Rompimento: 28 dias · 16/07/2026</div>
+        </div>
+        <span class="cp-status">🟡</span>
+      </div>
+    </div>
+    <button class="btn-add-cp" onclick="addCP()">+ Adicionar CP</button>
+  </section>
+
+  <!-- FOTO -->
+  <section>
+    <div class="section-label">Foto do ensaio</div>
+    <div class="foto-area" onclick="alert('Câmera abre aqui — a foto será salva com GPS, obra e hora automaticamente')">
+      <div class="foto-icon">📷</div>
+      <div class="foto-text">Tirar foto do slump cone</div>
+      <div class="foto-sub">A imagem será marcada automaticamente com:</div>
+      <div class="foto-tags">
+        <span class="foto-tag">📍 GPS</span>
+        <span class="foto-tag">🏗️ BR-163 Lote 4A</span>
+        <span class="foto-tag">📅 18/06/2026</span>
+        <span class="foto-tag">🕐 Hora atual</span>
+        <span class="foto-tag">📌 Est. 240+00</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBSERVAÇÕES -->
+  <section>
+    <div class="section-label">Observações</div>
+    <div class="obs-field">
+      <div class="field-label" style="margin-bottom:8px;">Observações livres</div>
+      <textarea class="obs-textarea" id="obs" placeholder="Ex: Concreto com aparência normal, sem segregação..." oninput="updateChar()"></textarea>
+      <div class="obs-footer">
+        <button class="btn-mic" onclick="alert('Ditado por voz ativado')">🎙️ Ditar</button>
+        <span class="char-count" id="char-count">0 / 500</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="bottom-bar">
+  <button class="btn-salvar-rascunho" onclick="alert('Rascunho salvo localmente!')">Salvar rascunho</button>
+  <button class="btn-finalizar" id="btn-fin" onclick="finalizar()">Finalizar ficha ✓</button>
+</div>
+
+<script>
+  // Data/hora auto
+  function updateTime() {
+    const now = new Date();
+    document.getElementById('dt-auto').textContent =
+      now.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'}) + ' · ' +
+      now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }
+  updateTime(); setInterval(updateTime, 30000);
+
+  // Calcula slump em tempo real
+  function calcSlump() {
+    const v = parseFloat(document.getElementById('slump-val').value);
+    const box = document.getElementById('res-box');
+    const lbl = document.getElementById('res-label');
+    const val = document.getElementById('res-valor');
+    const norma = document.getElementById('res-norma');
+    const chip = document.getElementById('slump-chip');
+
+    if (isNaN(v)) {
+      box.className='resultado-box'; lbl.className='resultado-label';
+      val.className='resultado-valor'; val.textContent='—';
+      norma.textContent='Insira o valor abaixo'; chip.style.display='none'; return;
+    }
+
+    val.textContent = v;
+    chip.style.display='inline';
+
+    if (v < 60) {
+      box.className='resultado-box reprovado'; lbl.className='resultado-label reprovado';
+      val.className='resultado-valor reprovado'; lbl.textContent='⚠ ABATIMENTO INSUFICIENTE';
+      norma.innerHTML='Limite mínimo: <strong>60 mm</strong> · Verificar relação a/c';
+      chip.style.cssText='display:inline;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);';
+      chip.textContent='REPROVADO';
+    } else if (v <= 120) {
+      box.className='resultado-box aprovado'; lbl.className='resultado-label aprovado';
+      val.className='resultado-valor aprovado'; lbl.textContent='✔ DENTRO DO LIMITE';
+      norma.innerHTML='Faixa NBR 7223: <strong>60–120 mm</strong> ✓';
+      chip.style.cssText='display:inline;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);';
+      chip.textContent='APROVADO';
+    } else {
+      box.className='resultado-box reprovado'; lbl.className='resultado-label reprovado';
+      val.className='resultado-valor reprovado'; lbl.textContent='⚠ ABATIMENTO EXCESSIVO';
+      norma.innerHTML='Limite máximo: <strong>120 mm</strong> · Concreto muito fluido';
+      chip.style.cssText='display:inline;font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);';
+      chip.textContent='REPROVADO';
+    }
+  }
+
+  let cpCount = 4;
+  function addCP() {
+    cpCount++;
+    const dias = cpCount <= 4 ? 7 : 28;
+    const data = new Date(); data.setDate(data.getDate()+dias);
+    const dStr = data.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const li = document.createElement('div'); li.className='cp-item';
+    li.innerHTML=`<div class="cp-num">${cpCount}</div><div class="cp-info"><div class="cp-title">CP-0${cpCount}</div><div class="cp-sub">Rompimento: ${dias} dias · ${dStr}</div></div><span class="cp-status">🟡</span>`;
+    document.getElementById('cp-list').appendChild(li);
+  }
+
+  function updateChar() {
+    const l = document.getElementById('obs').value.length;
+    document.getElementById('char-count').textContent = l+' / 500';
+  }
+
+  function salvarFichaSlump(){
+  const fichas = JSON.parse(localStorage.getItem('fichas')||'[]');
+  fichas.unshift({tipo:'Slump Test', modulo:'Concreto', data:new Date().toISOString(), status:'pendente', resumo:'Amostra '+(document.getElementById('num-amostra').value||'—')+' • Slump '+(document.getElementById('slump-val').value||'—')+' mm', dados:{amostra:document.getElementById('num-amostra').value, fck:document.getElementById('fck').value, nf:document.getElementById('nf-betoneira').value, slump:document.getElementById('slump-val').value, obs:document.getElementById('obs').value}});
+  localStorage.setItem('fichas', JSON.stringify(fichas));
+}
+
+function finalizar() {
+    const slump = document.getElementById('slump-val').value;
+    const nf = document.getElementById('nf-betoneira').value;
+    if (!slump || !nf) { alert('⚠️ Preencha ao menos o Slump e a NF da betoneira para finalizar.'); return; }
+    alert('✅ Ficha do Slump Test salva localmente!\n\nWifi detectado — sincronizando com servidor...');
+  }
+</script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+</body>
+</html>

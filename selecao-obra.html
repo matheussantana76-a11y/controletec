@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GeoField — Seleção de Obra</title>
+<meta name="theme-color" content="#1A1A18">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #F2F2F0;
+    --surface: #FFFFFF;
+    --surface2: #EAEAE7;
+    --border: #D0CFC9;
+    --text: #1A1A18;
+    --text2: #5A5A56;
+    --text3: #8A8A84;
+    --accent: #E85D20;
+    --blue: #1A5FA8;
+    --green: #1E7A3C;
+    --green-bg: #EAF5EE;
+    --green-border: #A8D9B8;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .header {
+    background: var(--text);
+    color: #fff;
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .btn-back {
+    min-width: 78px; height: 40px; padding: 0 12px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .btn-back:active { background: rgba(255,255,255,0.2); }
+  .header-info { flex: 1; }
+  .app-name { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  .main { padding: 16px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* PROGRESS */
+  .progress-bar {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 12px;
+  }
+  .step {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    flex: 1;
+  }
+  .step-circle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.3s;
+  }
+  .step-circle.done { background: var(--green); color: #fff; }
+  .step-circle.active { background: var(--accent); color: #fff; }
+  .step-circle.waiting { background: var(--surface2); color: var(--text3); border: 1.5px solid var(--border); }
+  .step-label { font-size: 10px; font-weight: 600; color: var(--text3); text-align: center; }
+  .step-label.active { color: var(--accent); }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin-bottom: 16px; transition: background 0.3s; }
+  .step-line.done { background: var(--green); }
+
+  /* FORM */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+  }
+  .field-group { display: flex; flex-direction: column; gap: 12px; }
+  .field {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+  .field.active { border-color: var(--blue); }
+  .field.filled { border-color: var(--green); }
+  .field.disabled { opacity: 0.45; pointer-events: none; }
+  .field-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .field-label .required { color: var(--accent); }
+  .field-select {
+    width: 100%; background: none; border: none; outline: none;
+    font-size: 16px; font-weight: 600; color: var(--text);
+    font-family: inherit; cursor: pointer; appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A8A84' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    padding-right: 22px;
+  }
+  .field-select option { font-size: 15px; }
+  .field-select:disabled { color: var(--text3); }
+  .field-hint {
+    font-size: 11px; color: var(--text3); margin-top: 5px;
+  }
+  .field-check {
+    display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  }
+  .field-check-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--green); color: #fff;
+    font-size: 11px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .field-check-text { font-size: 12px; color: var(--green); font-weight: 600; }
+
+  /* RESUMO */
+  .resumo-card {
+    background: var(--surface);
+    border: 1.5px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: none;
+  }
+  .resumo-card.visible { display: block; }
+  .resumo-title { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .resumo-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .resumo-row:last-child { border-bottom: none; }
+  .resumo-key { font-size: 12px; color: var(--text3); }
+  .resumo-val { font-size: 13px; font-weight: 700; color: var(--text); text-align: right; max-width: 60%; }
+
+  /* BOTÃO CONFIRMAR */
+  .btn-confirmar {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    height: 64px;
+    width: 100%;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.15s, opacity 0.2s;
+    margin-top: 4px;
+  }
+  .btn-confirmar:disabled { opacity: 0.35; pointer-events: none; }
+  .btn-confirmar:active { background: #C44A14; }
+
+  /* INFO CHIP */
+  .info-chip {
+    background: #EEF4FF;
+    border: 1.5px solid #BDD3F8;
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .info-chip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-chip-text { font-size: 13px; color: #1A5FA8; line-height: 1.45; }
+  .info-chip-text strong { font-weight: 700; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <button class="btn-back" onclick="history.back()">VOLTAR</button>
+  <div class="header-info">
+    <div class="app-name">GeoField</div>
+    <div class="header-title">Selecionar obra</div>
+    <div class="header-sub">Passo 1 de 3</div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- PROGRESS -->
+  <div class="progress-bar">
+    <div class="progress-steps">
+      <div class="step">
+        <div class="step-circle active" id="circ1">1</div>
+        <div class="step-label active">Obra</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step">
+        <div class="step-circle waiting" id="circ2">2</div>
+        <div class="step-label" id="lbl2">Módulo</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step">
+        <div class="step-circle waiting" id="circ3">3</div>
+        <div class="step-label" id="lbl3">Ensaio</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="info-chip">
+    <div class="info-chip-icon">💡</div>
+    <div class="info-chip-text">
+      <strong>Selecione a obra antes de iniciar qualquer ensaio.</strong>
+      Os dados serão padronizados automaticamente — sem risco de erro de digitação.
+    </div>
+  </div>
+
+  <!-- CAMPOS -->
+  <section>
+    <div class="section-label">Localização do ensaio</div>
+    <div class="field-group">
+
+      <!-- CLIENTE -->
+      <div class="field active" id="f-cliente">
+        <div class="field-label">Cliente <span class="required">*</span></div>
+        <select class="field-select" id="sel-cliente" onchange="onCliente()">
+          <option value="">— Selecione o cliente —</option>
+          <option>DNIT — Dept. Nacional Infraestrutura</option>
+          <option>Prefeitura Municipal de Dourados</option>
+          <option>Construtora Mendes &amp; Silva</option>
+          <option>Governo do Estado MS</option>
+        </select>
+      </div>
+
+      <!-- OBRA -->
+      <div class="field disabled" id="f-obra">
+        <div class="field-label">Obra / Contrato <span class="required">*</span></div>
+        <select class="field-select" id="sel-obra" onchange="onObra()" disabled>
+          <option value="">— Selecione primeiro o cliente —</option>
+        </select>
+        <div class="field-hint" id="hint-obra">Aguardando seleção do cliente</div>
+      </div>
+
+      <!-- TRECHO -->
+      <div class="field disabled" id="f-trecho">
+        <div class="field-label">Trecho / Lote <span class="required">*</span></div>
+        <select class="field-select" id="sel-trecho" onchange="onTrecho()" disabled>
+          <option value="">— Selecione primeiro a obra —</option>
+        </select>
+      </div>
+
+      <!-- ESTACA -->
+      <div class="field disabled" id="f-estaca">
+        <div class="field-label">Estaca / Km <span class="required">*</span></div>
+        <select class="field-select" id="sel-estaca" onchange="onEstaca()" disabled>
+          <option value="">— Selecione o trecho —</option>
+        </select>
+        <div class="field-hint" id="hint-estaca"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RESUMO DA SELEÇÃO -->
+  <div class="resumo-card" id="resumo">
+    <div class="resumo-title">✔ Localização confirmada</div>
+    <div class="resumo-row">
+      <span class="resumo-key">Cliente</span>
+      <span class="resumo-val" id="r-cliente">—</span>
+    </div>
+    <div class="resumo-row">
+      <span class="resumo-key">Obra</span>
+      <span class="resumo-val" id="r-obra">—</span>
+    </div>
+    <div class="resumo-row">
+      <span class="resumo-key">Trecho</span>
+      <span class="resumo-val" id="r-trecho">—</span>
+    </div>
+    <div class="resumo-row">
+      <span class="resumo-key">Estaca</span>
+      <span class="resumo-val" id="r-estaca">—</span>
+    </div>
+  </div>
+
+  <!-- CONFIRMAR -->
+  <button class="btn-confirmar" id="btn-confirmar" disabled onclick="confirmar()">
+    Confirmar e escolher módulo →
+  </button>
+
+</main>
+
+<script>
+const dados = {
+  "DNIT — Dept. Nacional Infraestrutura": {
+    obras: {
+      "BR-163 — Duplicação Lote 4 (#2026-041)": {
+        trechos: {
+          "Lote 4A — km 238 a 244": ["Est. 238+00","Est. 239+00","Est. 240+00","Est. 241+00","Est. 242+00","Est. 243+00","Est. 244+00"],
+          "Lote 4B — km 244 a 250": ["Est. 244+00","Est. 245+00","Est. 246+00","Est. 247+00","Est. 248+00","Est. 249+00","Est. 250+00"],
+        }
+      },
+      "BR-376 — Restauração (#2025-118)": {
+        trechos: {
+          "Segmento Norte — km 180 a 195": ["km 180+000","km 182+500","km 185+000","km 187+500","km 190+000","km 192+500","km 195+000"],
+          "Segmento Sul — km 195 a 210":   ["km 195+000","km 197+500","km 200+000","km 202+500","km 205+000","km 207+500","km 210+000"],
+        }
+      }
+    }
+  },
+  "Prefeitura Municipal de Dourados": {
+    obras: {
+      "Pavimentação Bairro Jardim Caramuru (#PM-2026-07)": {
+        trechos: {
+          "Rua A — trecho 1": ["Est. 0+00","Est. 1+00","Est. 2+00","Est. 3+00"],
+          "Rua B — trecho 2": ["Est. 0+00","Est. 1+00","Est. 2+00"],
+        }
+      }
+    }
+  },
+  "Construtora Mendes & Silva": {
+    obras: {
+      "Galpão Industrial ZI-Norte (#CMS-2026-03)": {
+        trechos: {
+          "Bloco A": ["Eixo A1","Eixo A2","Eixo A3"],
+          "Bloco B": ["Eixo B1","Eixo B2","Eixo B3"],
+        }
+      }
+    }
+  },
+  "Governo do Estado MS": {
+    obras: {
+      "MS-156 — Implantação (#GE-2025-44)": {
+        trechos: {
+          "Trecho 1 — km 0 a 15": ["km 0+000","km 3+000","km 6+000","km 9+000","km 12+000","km 15+000"],
+        }
+      }
+    }
+  }
+};
+
+function setField(id, cls) {
+  const f = document.getElementById(id);
+  f.className = 'field ' + cls;
+}
+function enableSelect(selId, fieldId, options, placeholder) {
+  const sel = document.getElementById(selId);
+  sel.innerHTML = `<option value="">${placeholder}</option>`;
+  options.forEach(o => { const opt = document.createElement('option'); opt.textContent = o; sel.appendChild(opt); });
+  sel.disabled = false;
+  setField(fieldId, 'active');
+}
+
+function onCliente() {
+  const v = document.getElementById('sel-cliente').value;
+  setField('f-cliente', v ? 'filled' : 'active');
+  const obraField = document.getElementById('f-obra');
+  const sel = document.getElementById('sel-obra');
+  if (!v) { obraField.className='field disabled'; sel.disabled=true; sel.innerHTML='<option>— Selecione primeiro o cliente —</option>'; resetAbaixo('obra'); return; }
+  enableSelect('sel-obra','f-obra', Object.keys(dados[v].obras), '— Selecione a obra —');
+  document.getElementById('hint-obra').textContent = Object.keys(dados[v].obras).length + ' obra(s) disponível(is)';
+  resetAbaixo('obra');
+}
+function onObra() {
+  const c = document.getElementById('sel-cliente').value;
+  const v = document.getElementById('sel-obra').value;
+  setField('f-obra', v ? 'filled' : 'active');
+  if (!v) { resetAbaixo('trecho'); return; }
+  enableSelect('sel-trecho','f-trecho', Object.keys(dados[c].obras[v].trechos), '— Selecione o trecho —');
+  resetAbaixo('trecho');
+}
+function onTrecho() {
+  const c = document.getElementById('sel-cliente').value;
+  const o = document.getElementById('sel-obra').value;
+  const v = document.getElementById('sel-trecho').value;
+  setField('f-trecho', v ? 'filled' : 'active');
+  if (!v) { resetAbaixo('estaca'); return; }
+  const estacas = dados[c].obras[o].trechos[v];
+  enableSelect('sel-estaca','f-estaca', estacas, '— Selecione a estaca —');
+  document.getElementById('hint-estaca').textContent = estacas.length + ' estacas neste trecho';
+  resetAbaixo('estaca');
+}
+function onEstaca() {
+  const v = document.getElementById('sel-estaca').value;
+  setField('f-estaca', v ? 'filled' : 'active');
+  checkComplete();
+}
+
+function resetAbaixo(from) {
+  const ordem = ['obra','trecho','estaca'];
+  const idx = ordem.indexOf(from);
+  ordem.slice(idx).forEach(f => {
+    if (f === from) return;
+    document.getElementById('sel-'+f).innerHTML = '<option>—</option>';
+    document.getElementById('sel-'+f).disabled = true;
+    document.getElementById('f-'+f).className = 'field disabled';
+  });
+  document.getElementById('resumo').classList.remove('visible');
+  document.getElementById('btn-confirmar').disabled = true;
+}
+
+function checkComplete() {
+  const c = document.getElementById('sel-cliente').value;
+  const o = document.getElementById('sel-obra').value;
+  const t = document.getElementById('sel-trecho').value;
+  const e = document.getElementById('sel-estaca').value;
+  if (c && o && t && e) {
+    document.getElementById('r-cliente').textContent = c.split('—')[0].trim();
+    document.getElementById('r-obra').textContent = o.split('(')[0].trim();
+    document.getElementById('r-trecho').textContent = t;
+    document.getElementById('r-estaca').textContent = e;
+    document.getElementById('resumo').classList.add('visible');
+    document.getElementById('btn-confirmar').disabled = false;
+  }
+}
+
+function salvarObraAtiva(){
+  const obra = {cliente: clienteSel, obra: obraSel, trecho: trechoSel, estaca: estacaSel, data: new Date().toISOString()};
+  localStorage.setItem('obraAtiva', JSON.stringify(obra));
+}
+
+function confirmar() {
+  // Avança progresso
+  document.getElementById('circ1').className = 'step-circle done';
+  document.getElementById('circ1').textContent = '✓';
+  document.getElementById('line1').className = 'step-line done';
+  document.getElementById('circ2').className = 'step-circle active';
+  document.getElementById('lbl2').className = 'step-label active';
+  salvarObraAtiva(); window.location.href='nova-inspecao.html';
+}
+</script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+</body>
+</html>

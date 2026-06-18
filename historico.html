@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A1A18">
+<title>GeoField — Histórico de fichas</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="top">
+  <button class="back" onclick="history.back()">VOLTAR</button>
+  <div class="title">Histórico de fichas</div>
+  <div class="sub">Fichas salvas offline neste aparelho</div>
+</div>
+<main class="wrap">
+  <div class="offline-banner"><span data-offline-status>Modo offline pronto</span><span>💾 Local</span></div>
+  <div class="pdf-note">As fichas podem ser preenchidas sem internet. Em Frasco de areia e HILF, o botão <strong>PDF lote</strong> agrupa até 7 furos do mesmo lote/local.</div>
+  <div class="actions two">
+    <button class="btn secondary" onclick="location.href='nova-inspecao.html'">Nova inspeção</button>
+    <button class="btn secondary" onclick="GeoField.exportarJSON()">Backup JSON</button>
+  </div>
+  <div id="lista"></div>
+</main>
+<nav class="nav"><a href="index.html">🏠<br>Início</a><a href="historico.html" class="active">📋<br>Fichas</a><a href="mapa.html">📍<br>Mapa</a><a href="configuracoes.html">⚙️<br>Config.</a></nav>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+<script src="assets/js/historico.js"></script>
+</body>
+</html>

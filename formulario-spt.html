@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GeoField — SPT</title>
+<meta name="theme-color" content="#1A1A18">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/formulario-spt.css">
+</head>
+<body>
+
+<header class="header">
+  <button class="btn-back" onclick="history.back()">VOLTAR</button>
+  <div class="header-info">
+    <div class="app-name">Geotecnia</div>
+    <div class="header-title">Sondagem SPT</div>
+    <div class="header-sub">ABNT NBR 6484</div>
+  </div>
+</header>
+
+<div class="obra-banner">
+  <span class="obra-banner-text" id="obra-atual-banner"><strong>Obra não selecionada</strong> · SPT offline</span>
+</div>
+
+<div class="depth-bar">
+  <div>
+    <div class="depth-num" id="depth-display">1,0</div>
+    <div class="depth-unit">m atual</div>
+  </div>
+  <div class="depth-info">
+    <div class="depth-label">Profundidade atingida</div>
+    <div class="depth-progress-wrap">
+      <div class="depth-progress-fill" id="depth-fill" style="width:0%"></div>
+    </div>
+    <div class="depth-meta" id="depth-meta">0 de 15 m planejados</div>
+  </div>
+</div>
+
+<main class="main">
+
+  <section>
+    <div class="section-label">Identificação do furo</div>
+    <div class="form-grid">
+      <div class="field">
+        <div class="field-label">Nº do furo</div>
+        <input class="field-input" type="text" id="furo-id" placeholder="Ex: SP-01" oninput="salvarRascunhoAutomatico()">
+      </div>
+      <div class="field">
+        <div class="field-label">Data do ensaio</div>
+        <input class="field-input" type="date" id="data-ensaio" oninput="salvarRascunhoAutomatico()">
+      </div>
+      <div class="field wide">
+        <div class="field-label">Local / estaca</div>
+        <input class="field-input" type="text" id="local-furo" placeholder="Ex: Estaca 120+10 / eixo" oninput="salvarRascunhoAutomatico()">
+      </div>
+      <div class="field">
+        <div class="field-label">Prof. inicial (m)</div>
+        <input class="field-input" type="number" step="0.1" inputmode="decimal" value="1" id="prof-inicial" oninput="ajustarProfundidadeInicial();salvarRascunhoAutomatico()">
+      </div>
+      <div class="field">
+        <div class="field-label">Prof. total plan. (m)</div>
+        <input class="field-input" type="number" step="0.1" inputmode="decimal" value="15" id="prof-total" oninput="updateDepth();salvarRascunhoAutomatico()">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Metro atual — <span id="metro-label">1,0–2,0 m</span></div>
+    <div class="metro-card">
+      <div class="metro-card-title">Golpes por trecho</div>
+      <div class="metro-fields">
+        <div class="metro-row">
+          <div class="metro-field">
+            <div class="metro-field-label">1º trecho</div>
+            <input class="metro-field-input" type="number" inputmode="numeric" placeholder="—" id="g1" oninput="calcNSPT();salvarRascunhoAutomatico()">
+            <div class="metro-field-unit">15 cm</div>
+          </div>
+          <div class="metro-field">
+            <div class="metro-field-label">2º trecho</div>
+            <input class="metro-field-input" type="number" inputmode="numeric" placeholder="—" id="g2" oninput="calcNSPT();salvarRascunhoAutomatico()">
+            <div class="metro-field-unit">15 cm</div>
+          </div>
+          <div class="metro-field">
+            <div class="metro-field-label">3º trecho</div>
+            <input class="metro-field-input" type="number" inputmode="numeric" placeholder="—" id="g3" oninput="calcNSPT();salvarRascunhoAutomatico()">
+            <div class="metro-field-unit">15 cm</div>
+          </div>
+        </div>
+        <div class="nspt-resultado">
+          <div>
+            <div class="nspt-label">N-SPT (2º + 3º)</div>
+            <div class="nspt-valor" id="nspt-val">—</div>
+          </div>
+          <div class="nspt-class" id="nspt-class">Aguardando</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Descrição da seção atual</div>
+    <div class="form-grid">
+      <div class="field wide">
+        <div class="field-label">Tipo de solo</div>
+        <select class="field-select" id="tipo-solo" onchange="salvarRascunhoAutomatico()">
+          <option value="">— Selecione —</option>
+          <option>Areia fina</option>
+          <option>Areia média</option>
+          <option>Areia grossa</option>
+          <option>Silte arenoso</option>
+          <option>Silte argiloso</option>
+          <option>Argila siltosa</option>
+          <option>Argila</option>
+          <option>Argila orgânica</option>
+          <option>Pedregulho</option>
+          <option>Solo pedregulhoso</option>
+          <option>Rocha decomposta</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label">Cor</div>
+        <select class="field-select" id="cor-solo" onchange="salvarRascunhoAutomatico()">
+          <option value="">— Selecione —</option>
+          <option>Marrom</option>
+          <option>Marrom avermelhado</option>
+          <option>Amarelo</option>
+          <option>Cinza</option>
+          <option>Cinza escuro</option>
+          <option>Vermelho</option>
+          <option>Preto</option>
+          <option>Bege</option>
+        </select>
+      </div>
+      <div class="field">
+        <div class="field-label">Consistência / compacidade</div>
+        <select class="field-select" id="consistencia" onchange="salvarRascunhoAutomatico()">
+          <option value="">— Automática ou manual —</option>
+          <option>Muito fofa / Muito mole</option>
+          <option>Fofa / Mole</option>
+          <option>Média</option>
+          <option>Compacta / Rija</option>
+          <option>Muito compacta / Dura</option>
+          <option>Impenetrável ao SPT</option>
+        </select>
+      </div>
+      <div class="field wide">
+        <div class="field-label">Observações da seção</div>
+        <input class="field-input" type="text" id="obs-metro" placeholder="Ex: material úmido, presença de pedregulho, recusa..." oninput="salvarRascunhoAutomatico()">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Nível d'água</div>
+    <div class="na-toggle" onclick="toggleNA()">
+      <div class="na-toggle-info">
+        <div class="na-toggle-title">Nível d'água encontrado nesta seção</div>
+        <div class="na-toggle-sub" id="na-sub">Não detectado</div>
+      </div>
+      <div class="toggle" id="na-toggle"><div class="toggle-knob"></div></div>
+    </div>
+  </section>
+
+  <div class="btn-row">
+    <button class="btn-encerrar danger" onclick="limparSPT(true)">Limpar ficha</button>
+    <button class="btn-avancar" onclick="avancarMetro()">Registrar seção + próximo</button>
+  </div>
+
+  <section>
+    <div class="section-label">Seções já registradas no furo</div>
+    <div class="tabela-wrap">
+      <div class="tabela-header">
+        <span>Prof.</span>
+        <span>Golpes</span>
+        <span>N-SPT</span>
+        <span>Material</span>
+        <span>Classif.</span>
+      </div>
+      <div id="tabela-rows"></div>
+    </div>
+    <div class="info-chip small-note">
+      <div class="info-chip-text"><strong>Importante:</strong> somente as seções registradas nesta tabela entram no PDF. Ao encerrar, se o metro atual estiver preenchido, ele será registrado automaticamente antes de salvar.</div>
+    </div>
+  </section>
+
+</main>
+
+<div class="bottom-bar">
+  <button class="btn-salvar-rascunho" onclick="salvarSPT('rascunho')">Salvar rascunho</button>
+  <button class="btn-finalizar" onclick="finalizarSPT()">Encerrar e gerar PDF</button>
+</div>
+
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+<script src="assets/js/formulario-spt.js"></script>
+</body>
+</html>

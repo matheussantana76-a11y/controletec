@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoField — Geotecnia</title>
+<meta name="theme-color" content="#1A1A18">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="top">
+  <button class="back" onclick="history.back()">VOLTAR</button>
+  <div class="title">Geotecnia</div>
+  <div class="sub">Fichas disponíveis</div>
+</div>
+<main class="wrap">
+  <div class="card" onclick="location.href='formulario-spt.html'">
+    <h3>SPT</h3>
+    <p>Golpes, NSPT, nível d’água e borelog.</p>
+  </div>
+  <div class="card" onclick="location.href='formulario-frasco-areia.html'">
+    <h3>Frasco de areia</h3>
+    <p>Densidade in situ, umidade de campo e GC calculado com laboratório.</p>
+  </div>
+  <div class="card" onclick="location.href='formulario-hilf.html'">
+    <h3>Cilindro amostrador / HILF</h3>
+    <p>Densidade por cilindro, umidade e grau de compactação.</p>
+  </div>
+</main>
+<nav class="nav"><a href="index.html">🏠<br>Início</a><a href="historico.html">📋<br>Fichas</a><a href="mapa.html">📍<br>Mapa</a><a href="configuracoes.html">⚙️<br>Config.</a></nav>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+</body>
+</html>

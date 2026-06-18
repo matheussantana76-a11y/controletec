@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A1A18">
+<title>GeoField — Cilindro amostrador / HILF</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="top">
+  <button class="back" onclick="history.back()">VOLTAR</button>
+  <div class="title">Cilindro / HILF</div>
+  <div class="sub">Compactação in situ por cilindro amostrador</div>
+</div>
+<main class="wrap form-shell">
+  <div class="offline-banner">
+    <span data-offline-status>Modo offline pronto</span>
+    <span>💾 Local</span>
+  </div>
+
+  <div class="profile-chip" id="perfilFicha">
+    <div><strong>Laboratorista</strong><br><span>Usado para identificação no PDF</span></div>
+    <button class="btn secondary small" type="button" onclick="location.href='configuracoes.html'">Editar</button>
+  </div>
+
+  <section class="lote-card" id="painelLote">
+    <div class="lote-top">
+      <div>
+        <h3>Lote de furos do mesmo local</h3>
+        <p>Use o mesmo esqueleto para cadastrar vários furos. O PDF agrupa até 7 furos do mesmo lote/local.</p>
+      </div>
+      <div class="lote-count"><span>Furos</span><strong id="contadorFurosLote">0/7</strong></div>
+    </div>
+    <div class="mini-actions">
+      <button type="button" onclick="carregarUltimoEsqueleto()">Continuar último lote</button>
+      <button type="button" onclick="iniciarNovoLote(true)">Novo lote</button>
+    </div>
+    <div class="group-meta" id="descricaoLote">Preencha os dados e salve o primeiro furo.</div>
+  </section>
+
+
+  <section class="form-card compact">
+    <div class="form-card-title">
+      <div><h2>Identificação da amostra</h2><p>Dados que saem no histórico e na ficha PDF.</p></div>
+      <span class="step-badge">1</span>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="identificacao">Nº da ficha/amostra</label><input id="identificacao" placeholder="Ex: HILF-001" oninput="salvarRascunhoAutomatico()"></div>
+      <div class="field"><label for="local">Local / estaca</label><input id="local" placeholder="Ex: Est. 240+00 LE" oninput="salvarRascunhoAutomatico()"></div>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="camada">Camada</label><input id="camada" placeholder="Ex: Base" oninput="salvarRascunhoAutomatico()"></div>
+      <div class="field"><label for="material">Material</label><input id="material" placeholder="Ex: Solo brita" oninput="salvarRascunhoAutomatico()"></div>
+    </div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Pesagem do cilindro</h2><p>Informe a massa do cilindro vazio e com solo úmido.</p></div>
+      <span class="step-badge">2</span>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="massaCilindro">Massa cilindro vazio (g)</label><input id="massaCilindro" type="number" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+      <div class="field"><label for="massaCilindroSolo">Massa cilindro + solo úmido (g)</label><input id="massaCilindroSolo" type="number" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+    </div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Volume do cilindro</h2><p>Use o volume conhecido ou deixe o app calcular por diâmetro e altura.</p></div>
+      <span class="step-badge">3</span>
+    </div>
+    <div class="field"><label for="volumeCilindro">Volume conhecido do cilindro (cm³)</label><input id="volumeCilindro" type="number" step="0.1" inputmode="decimal" placeholder="Preencha se já souber o volume" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+    <div class="input-grid two">
+      <div class="field"><label for="diametro">Diâmetro interno (cm)</label><input id="diametro" type="number" step="0.01" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+      <div class="field"><label for="altura">Altura interna (cm)</label><input id="altura" type="number" step="0.01" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+    </div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Umidade e laboratório</h2><p>Dados necessários para densidade seca e grau de compactação.</p></div>
+      <span class="step-badge">4</span>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="umidadeCampo">Umidade de campo (%)</label><input id="umidadeCampo" type="number" step="0.01" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+      <div class="field"><label for="umidadeLab">Umidade ótima/lab. (%)</label><input id="umidadeLab" type="number" step="0.01" inputmode="decimal" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+    </div>
+    <div class="field"><label for="densidadeLab">Densidade seca máxima laboratório (g/cm³)</label><input id="densidadeLab" type="number" step="0.001" inputmode="decimal" placeholder="Ex: 1,850" oninput="calcularHilf();salvarRascunhoAutomatico()"></div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Resultado automático</h2><p>Confira antes de finalizar o ensaio.</p></div>
+      <span class="step-badge">%</span>
+    </div>
+    <div class="result-grid" id="resultado"><div class="result-help">Informe os dados para calcular.</div></div>
+  </section>
+
+  <section class="form-card compact">
+    <div class="field"><label for="obs">Observações</label><textarea id="obs" placeholder="Ex: cilindro utilizado, camada, condição do material..." oninput="salvarRascunhoAutomatico()"></textarea></div>
+  </section>
+
+  <div class="pdf-note">O ensaio fica salvo no aparelho mesmo sem internet. Depois, no Histórico, toque em <strong>PDF</strong> para gerar/imprimir a ficha com os dados do laboratorista.</div>
+
+  <div class="sticky-actions">
+    <div class="btn-row three">
+      <button class="btn secondary" type="button" onclick="salvarHilf('rascunho')">Salvar rascunho</button>
+      <button class="btn" type="button" onclick="salvarEAdicionarOutroFuro()">Salvar furo + outro</button>
+      <button class="btn tertiary" type="button" onclick="finalizarLote()">Finalizar lote / histórico</button>
+    </div>
+  </div>
+</main>
+<nav class="nav"><a href="index.html">🏠<br>Início</a><a href="historico.html">📋<br>Fichas</a><a href="mapa.html">📍<br>Mapa</a><a href="configuracoes.html">⚙️<br>Config.</a></nav>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+<script src="assets/js/formulario-hilf.js"></script>
+</body>
+</html>

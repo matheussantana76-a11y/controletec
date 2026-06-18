@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoField — Moldagem de CP</title>
+<meta name="theme-color" content="#1A1A18">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="top"><button class="back" onclick="history.back()">VOLTAR</button><div class="title">Moldagem de CP</div><div class="sub">Corpos de prova de concreto</div></div>
+<main class="wrap">
+<label>Nº da amostra</label><input id="amostra" placeholder="Ex: 012">
+<div class="row"><div><label>FCK</label><input id="fck" type="number" placeholder="25"></div><div><label>NF betoneira</label><input id="nf" placeholder="NF-4892"></div></div>
+<div class="row"><div><label>Quantidade de CP</label><input id="qtd" type="number" value="4" oninput="atualizarDatas()"></div><div><label>Idade principal</label><select id="idade" onchange="atualizarDatas()"><option value="7">7 dias</option><option value="28" selected>28 dias</option></select></div></div>
+<div class="result-box" id="datas-rompimento"></div>
+<label>Observações</label><textarea id="obs" placeholder="Ex: Moldagem sem segregação, cura identificada..."></textarea>
+<button class="btn" onclick="salvarMoldagemCP()">Salvar moldagem ✓</button>
+</main>
+<nav class="nav"><a href="index.html">🏠<br>Início</a><a href="historico.html">📋<br>Fichas</a><a href="mapa.html">📍<br>Mapa</a><a href="configuracoes.html">⚙️<br>Config.</a></nav>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/formulario-moldagem-cp.js"></script>
+<script src="assets/js/app-init.js"></script>
+</body>
+</html>

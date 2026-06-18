@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A1A18">
+<title>GeoField — Configurações</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="top">
+  <button class="back" onclick="history.back()">VOLTAR</button>
+  <div class="title">Configurações</div>
+  <div class="sub">Perfil local, offline e exportação</div>
+</div>
+<main class="wrap form-shell">
+  <div class="offline-banner"><span data-offline-status>Modo offline pronto</span><span>💾 Local</span></div>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Login / identificação do laboratorista</h2><p>Esse perfil fica salvo apenas neste aparelho e aparece nas fichas PDF.</p></div>
+      <span class="step-badge">👤</span>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="nome">Nome</label><input id="nome" placeholder="Nome do laboratorista"></div>
+      <div class="field"><label for="cargo">Cargo/função</label><input id="cargo" placeholder="Ex: Laboratorista"></div>
+    </div>
+    <div class="input-grid two">
+      <div class="field"><label for="empresa">Empresa/laboratório</label><input id="empresa" placeholder="Ex: Laboratório X"></div>
+      <div class="field"><label for="registro">Registro / matrícula</label><input id="registro" placeholder="Ex: CREA, CRQ ou matrícula"></div>
+    </div>
+    <div class="field"><label for="email">E-mail</label><input id="email" type="email" placeholder="email@empresa.com.br"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="salvarPerfil()">Salvar login local</button>
+      <button class="btn secondary" onclick="sairPerfil()">Sair/limpar perfil</button>
+    </div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Funcionamento offline</h2><p>Depois do primeiro acesso em navegador compatível, as telas ficam em cache para uso sem internet.</p></div>
+      <span class="step-badge">📴</span>
+    </div>
+    <p class="muted">Os ensaios são armazenados no navegador deste aparelho. Nenhum dado precisa ser enviado para servidor para preencher fichas ou gerar PDF.</p>
+    <div class="actions two">
+      <button class="btn secondary" onclick="GeoField.exportarJSON()">Exportar backup</button>
+      <button class="btn secondary" onclick="GeoField.exportarCSV()">Exportar CSV</button>
+    </div>
+  </section>
+
+  <section class="form-card">
+    <div class="form-card-title">
+      <div><h2>Manutenção local</h2><p>Use com cuidado. Isso apaga fichas deste aparelho.</p></div>
+      <span class="step-badge">⚠️</span>
+    </div>
+    <button class="btn danger" onclick="limparDadosLocais()">Limpar fichas e obra ativa</button>
+  </section>
+</main>
+<nav class="nav"><a href="index.html">🏠<br>Início</a><a href="historico.html">📋<br>Fichas</a><a href="mapa.html">📍<br>Mapa</a><a href="configuracoes.html" class="active">⚙️<br>Config.</a></nav>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/app-init.js"></script>
+<script src="assets/js/configuracoes.js"></script>
+</body>
+</html>
