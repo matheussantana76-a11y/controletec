@@ -1,0 +1,179 @@
+:root {
+    --bg: #F2F2F0;
+    --surface: #FFFFFF;
+    --surface2: #EAEAE7;
+    --border: #D0CFC9;
+    --text: #1A1A18;
+    --text2: #5A5A56;
+    --text3: #8A8A84;
+    --accent: #E85D20;
+    --blue: #1A5FA8;
+    --green: #1E7A3C;
+    --green-bg: #EAF5EE;
+    --green-border: #A8D9B8;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  .header {
+    background: var(--text);
+    color: #fff;
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .btn-back {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .btn-back:active { background: rgba(255,255,255,0.2); }
+  .header-info { flex: 1; }
+  .app-name { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+  .header-title { font-size: 20px; font-weight: 700; }
+  .header-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+
+  .main { padding: 16px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* PROGRESS */
+  .progress-bar {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+  }
+  .progress-steps {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 12px;
+  }
+  .step {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    flex: 1;
+  }
+  .step-circle {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    transition: all 0.3s;
+  }
+  .step-circle.done { background: var(--green); color: #fff; }
+  .step-circle.active { background: var(--accent); color: #fff; }
+  .step-circle.waiting { background: var(--surface2); color: var(--text3); border: 1.5px solid var(--border); }
+  .step-label { font-size: 10px; font-weight: 600; color: var(--text3); text-align: center; }
+  .step-label.active { color: var(--accent); }
+  .step-line { flex: 1; height: 2px; background: var(--border); margin-bottom: 16px; transition: background 0.3s; }
+  .step-line.done { background: var(--green); }
+
+  /* FORM */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+  }
+  .field-group { display: flex; flex-direction: column; gap: 12px; }
+  .field {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+  .field.active { border-color: var(--blue); }
+  .field.filled { border-color: var(--green); }
+  .field.disabled { opacity: 0.45; pointer-events: none; }
+  .field-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .field-label .required { color: var(--accent); }
+  .field-select {
+    width: 100%; background: none; border: none; outline: none;
+    font-size: 16px; font-weight: 600; color: var(--text);
+    font-family: inherit; cursor: pointer; appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A8A84' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0 center;
+    padding-right: 22px;
+  }
+  .field-select option { font-size: 15px; }
+  .field-select:disabled { color: var(--text3); }
+  .field-hint {
+    font-size: 11px; color: var(--text3); margin-top: 5px;
+  }
+  .field-check {
+    display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  }
+  .field-check-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--green); color: #fff;
+    font-size: 11px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .field-check-text { font-size: 12px; color: var(--green); font-weight: 600; }
+
+  /* RESUMO */
+  .resumo-card {
+    background: var(--surface);
+    border: 1.5px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: none;
+  }
+  .resumo-card.visible { display: block; }
+  .resumo-title { font-size: 12px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+  .resumo-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .resumo-row:last-child { border-bottom: none; }
+  .resumo-key { font-size: 12px; color: var(--text3); }
+  .resumo-val { font-size: 13px; font-weight: 700; color: var(--text); text-align: right; max-width: 60%; }
+
+  /* BOTÃO CONFIRMAR */
+  .btn-confirmar {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    height: 64px;
+    width: 100%;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background 0.15s, opacity 0.2s;
+    margin-top: 4px;
+  }
+  .btn-confirmar:disabled { opacity: 0.35; pointer-events: none; }
+  .btn-confirmar:active { background: #C44A14; }
+
+  /* INFO CHIP */
+  .info-chip {
+    background: #EEF4FF;
+    border: 1.5px solid #BDD3F8;
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .info-chip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-chip-text { font-size: 13px; color: #1A5FA8; line-height: 1.45; }
+  .info-chip-text strong { font-weight: 700; }
