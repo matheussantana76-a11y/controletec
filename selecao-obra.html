@@ -111,38 +111,24 @@
   }
   .field.active { border-color: var(--blue); }
   .field.filled { border-color: var(--green); }
-  .field.disabled { opacity: 0.45; pointer-events: none; }
+  
   .field-label {
     font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
     text-transform: uppercase; color: var(--text3); margin-bottom: 6px;
     display: flex; align-items: center; gap: 6px;
   }
   .field-label .required { color: var(--accent); }
-  .field-select {
+  
+  /* NOVO CSS PARA INPUT DE TEXTO */
+  .field-input {
     width: 100%; background: none; border: none; outline: none;
     font-size: 16px; font-weight: 600; color: var(--text);
-    font-family: inherit; cursor: pointer; appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A8A84' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0 center;
-    padding-right: 22px;
+    font-family: inherit;
   }
-  .field-select option { font-size: 15px; }
-  .field-select:disabled { color: var(--text3); }
-  .field-hint {
-    font-size: 11px; color: var(--text3); margin-top: 5px;
+  .field-input::placeholder {
+    color: var(--text3);
+    font-weight: 500;
   }
-  .field-check {
-    display: flex; align-items: center; gap: 8px; margin-top: 4px;
-  }
-  .field-check-icon {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--green); color: #fff;
-    font-size: 11px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .field-check-text { font-size: 12px; color: var(--green); font-weight: 600; }
 
   /* RESUMO */
   .resumo-card {
@@ -203,7 +189,6 @@
 
 <main class="main">
 
-  <!-- PROGRESS -->
   <div class="progress-bar">
     <div class="progress-steps">
       <div class="step">
@@ -223,62 +208,41 @@
     </div>
   </div>
 
-  <!-- INFO -->
   <div class="info-chip">
     <div class="info-chip-icon">💡</div>
     <div class="info-chip-text">
-      <strong>Selecione a obra antes de iniciar qualquer ensaio.</strong>
-      Os dados serão padronizados automaticamente — sem risco de erro de digitação.
+      <strong>Preencha os dados da obra.</strong>
+      Digite as informações de localização para prosseguir com o ensaio.
     </div>
   </div>
 
-  <!-- CAMPOS -->
   <section>
     <div class="section-label">Localização do ensaio</div>
     <div class="field-group">
 
-      <!-- CLIENTE -->
       <div class="field active" id="f-cliente">
         <div class="field-label">Cliente <span class="required">*</span></div>
-        <select class="field-select" id="sel-cliente" onchange="onCliente()">
-          <option value="">— Selecione o cliente —</option>
-          <option>DNIT — Dept. Nacional Infraestrutura</option>
-          <option>Prefeitura Municipal de Dourados</option>
-          <option>Construtora Mendes &amp; Silva</option>
-          <option>Governo do Estado MS</option>
-        </select>
+        <input type="text" class="field-input" id="in-cliente" placeholder="Ex: DNIT, Prefeitura..." oninput="checkInput('cliente')">
       </div>
 
-      <!-- OBRA -->
-      <div class="field disabled" id="f-obra">
+      <div class="field" id="f-obra">
         <div class="field-label">Obra / Contrato <span class="required">*</span></div>
-        <select class="field-select" id="sel-obra" onchange="onObra()" disabled>
-          <option value="">— Selecione primeiro o cliente —</option>
-        </select>
-        <div class="field-hint" id="hint-obra">Aguardando seleção do cliente</div>
+        <input type="text" class="field-input" id="in-obra" placeholder="Ex: BR-163, Galpão..." oninput="checkInput('obra')">
       </div>
 
-      <!-- TRECHO -->
-      <div class="field disabled" id="f-trecho">
+      <div class="field" id="f-trecho">
         <div class="field-label">Trecho / Lote <span class="required">*</span></div>
-        <select class="field-select" id="sel-trecho" onchange="onTrecho()" disabled>
-          <option value="">— Selecione primeiro a obra —</option>
-        </select>
+        <input type="text" class="field-input" id="in-trecho" placeholder="Ex: Lote 4A, Bloco B..." oninput="checkInput('trecho')">
       </div>
 
-      <!-- ESTACA -->
-      <div class="field disabled" id="f-estaca">
+      <div class="field" id="f-estaca">
         <div class="field-label">Estaca / Km <span class="required">*</span></div>
-        <select class="field-select" id="sel-estaca" onchange="onEstaca()" disabled>
-          <option value="">— Selecione o trecho —</option>
-        </select>
-        <div class="field-hint" id="hint-estaca"></div>
+        <input type="text" class="field-input" id="in-estaca" placeholder="Ex: Est. 238+00, km 180..." oninput="checkInput('estaca')">
       </div>
 
     </div>
   </section>
 
-  <!-- RESUMO DA SELEÇÃO -->
   <div class="resumo-card" id="resumo">
     <div class="resumo-title">✔ Localização confirmada</div>
     <div class="resumo-row">
@@ -299,7 +263,6 @@
     </div>
   </div>
 
-  <!-- CONFIRMAR -->
   <button class="btn-confirmar" id="btn-confirmar" disabled onclick="confirmar()">
     Confirmar e escolher módulo →
   </button>
@@ -307,142 +270,69 @@
 </main>
 
 <script>
-const dados = {
-  "DNIT — Dept. Nacional Infraestrutura": {
-    obras: {
-      "BR-163 — Duplicação Lote 4 (#2026-041)": {
-        trechos: {
-          "Lote 4A — km 238 a 244": ["Est. 238+00","Est. 239+00","Est. 240+00","Est. 241+00","Est. 242+00","Est. 243+00","Est. 244+00"],
-          "Lote 4B — km 244 a 250": ["Est. 244+00","Est. 245+00","Est. 246+00","Est. 247+00","Est. 248+00","Est. 249+00","Est. 250+00"],
-        }
-      },
-      "BR-376 — Restauração (#2025-118)": {
-        trechos: {
-          "Segmento Norte — km 180 a 195": ["km 180+000","km 182+500","km 185+000","km 187+500","km 190+000","km 192+500","km 195+000"],
-          "Segmento Sul — km 195 a 210":   ["km 195+000","km 197+500","km 200+000","km 202+500","km 205+000","km 207+500","km 210+000"],
-        }
-      }
-    }
-  },
-  "Prefeitura Municipal de Dourados": {
-    obras: {
-      "Pavimentação Bairro Jardim Caramuru (#PM-2026-07)": {
-        trechos: {
-          "Rua A — trecho 1": ["Est. 0+00","Est. 1+00","Est. 2+00","Est. 3+00"],
-          "Rua B — trecho 2": ["Est. 0+00","Est. 1+00","Est. 2+00"],
-        }
-      }
-    }
-  },
-  "Construtora Mendes & Silva": {
-    obras: {
-      "Galpão Industrial ZI-Norte (#CMS-2026-03)": {
-        trechos: {
-          "Bloco A": ["Eixo A1","Eixo A2","Eixo A3"],
-          "Bloco B": ["Eixo B1","Eixo B2","Eixo B3"],
-        }
-      }
-    }
-  },
-  "Governo do Estado MS": {
-    obras: {
-      "MS-156 — Implantação (#GE-2025-44)": {
-        trechos: {
-          "Trecho 1 — km 0 a 15": ["km 0+000","km 3+000","km 6+000","km 9+000","km 12+000","km 15+000"],
-        }
-      }
-    }
+function checkInput(fieldId) {
+  const input = document.getElementById('in-' + fieldId);
+  const div = document.getElementById('f-' + fieldId);
+  
+  // Se o campo tiver texto, fica verde (filled). Se estiver vazio, volta a ficar com borda azul ou cinza.
+  if (input.value.trim() !== '') {
+    div.className = 'field filled';
+  } else {
+    div.className = 'field active';
   }
-};
-
-function setField(id, cls) {
-  const f = document.getElementById(id);
-  f.className = 'field ' + cls;
-}
-function enableSelect(selId, fieldId, options, placeholder) {
-  const sel = document.getElementById(selId);
-  sel.innerHTML = `<option value="">${placeholder}</option>`;
-  options.forEach(o => { const opt = document.createElement('option'); opt.textContent = o; sel.appendChild(opt); });
-  sel.disabled = false;
-  setField(fieldId, 'active');
-}
-
-function onCliente() {
-  const v = document.getElementById('sel-cliente').value;
-  setField('f-cliente', v ? 'filled' : 'active');
-  const obraField = document.getElementById('f-obra');
-  const sel = document.getElementById('sel-obra');
-  if (!v) { obraField.className='field disabled'; sel.disabled=true; sel.innerHTML='<option>— Selecione primeiro o cliente —</option>'; resetAbaixo('obra'); return; }
-  enableSelect('sel-obra','f-obra', Object.keys(dados[v].obras), '— Selecione a obra —');
-  document.getElementById('hint-obra').textContent = Object.keys(dados[v].obras).length + ' obra(s) disponível(is)';
-  resetAbaixo('obra');
-}
-function onObra() {
-  const c = document.getElementById('sel-cliente').value;
-  const v = document.getElementById('sel-obra').value;
-  setField('f-obra', v ? 'filled' : 'active');
-  if (!v) { resetAbaixo('trecho'); return; }
-  enableSelect('sel-trecho','f-trecho', Object.keys(dados[c].obras[v].trechos), '— Selecione o trecho —');
-  resetAbaixo('trecho');
-}
-function onTrecho() {
-  const c = document.getElementById('sel-cliente').value;
-  const o = document.getElementById('sel-obra').value;
-  const v = document.getElementById('sel-trecho').value;
-  setField('f-trecho', v ? 'filled' : 'active');
-  if (!v) { resetAbaixo('estaca'); return; }
-  const estacas = dados[c].obras[o].trechos[v];
-  enableSelect('sel-estaca','f-estaca', estacas, '— Selecione a estaca —');
-  document.getElementById('hint-estaca').textContent = estacas.length + ' estacas neste trecho';
-  resetAbaixo('estaca');
-}
-function onEstaca() {
-  const v = document.getElementById('sel-estaca').value;
-  setField('f-estaca', v ? 'filled' : 'active');
+  
   checkComplete();
 }
 
-function resetAbaixo(from) {
-  const ordem = ['obra','trecho','estaca'];
-  const idx = ordem.indexOf(from);
-  ordem.slice(idx).forEach(f => {
-    if (f === from) return;
-    document.getElementById('sel-'+f).innerHTML = '<option>—</option>';
-    document.getElementById('sel-'+f).disabled = true;
-    document.getElementById('f-'+f).className = 'field disabled';
-  });
-  document.getElementById('resumo').classList.remove('visible');
-  document.getElementById('btn-confirmar').disabled = true;
-}
-
 function checkComplete() {
-  const c = document.getElementById('sel-cliente').value;
-  const o = document.getElementById('sel-obra').value;
-  const t = document.getElementById('sel-trecho').value;
-  const e = document.getElementById('sel-estaca').value;
+  const c = document.getElementById('in-cliente').value.trim();
+  const o = document.getElementById('in-obra').value.trim();
+  const t = document.getElementById('in-trecho').value.trim();
+  const e = document.getElementById('in-estaca').value.trim();
+
+  const resumo = document.getElementById('resumo');
+  const btn = document.getElementById('btn-confirmar');
+
+  // Só mostra o resumo e libera o botão se os 4 campos tiverem sido preenchidos
   if (c && o && t && e) {
-    document.getElementById('r-cliente').textContent = c.split('—')[0].trim();
-    document.getElementById('r-obra').textContent = o.split('(')[0].trim();
+    document.getElementById('r-cliente').textContent = c;
+    document.getElementById('r-obra').textContent = o;
     document.getElementById('r-trecho').textContent = t;
     document.getElementById('r-estaca').textContent = e;
-    document.getElementById('resumo').classList.add('visible');
-    document.getElementById('btn-confirmar').disabled = false;
+    resumo.classList.add('visible');
+    btn.disabled = false;
+  } else {
+    resumo.classList.remove('visible');
+    btn.disabled = true;
   }
 }
 
 function salvarObraAtiva(){
-  const obra = {cliente: clienteSel, obra: obraSel, trecho: trechoSel, estaca: estacaSel, data: new Date().toISOString()};
+  const c = document.getElementById('in-cliente').value.trim();
+  const o = document.getElementById('in-obra').value.trim();
+  const t = document.getElementById('in-trecho').value.trim();
+  const e = document.getElementById('in-estaca').value.trim();
+
+  const obra = {
+    cliente: c, 
+    obra: o, 
+    trecho: t, 
+    estaca: e, 
+    data: new Date().toISOString()
+  };
   localStorage.setItem('obraAtiva', JSON.stringify(obra));
 }
 
 function confirmar() {
-  // Avança progresso
+  // Avança progresso visualmente (opcional, já que vai mudar de tela)
   document.getElementById('circ1').className = 'step-circle done';
   document.getElementById('circ1').textContent = '✓';
   document.getElementById('line1').className = 'step-line done';
   document.getElementById('circ2').className = 'step-circle active';
   document.getElementById('lbl2').className = 'step-label active';
-  salvarObraAtiva(); window.location.href='nova-inspecao.html';
+  
+  salvarObraAtiva(); 
+  window.location.href = 'nova-inspecao.html';
 }
 </script>
 <script src="assets/js/storage.js"></script>
